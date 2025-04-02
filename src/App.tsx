@@ -1,14 +1,13 @@
-import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import AuthForms from "./components/form.tsx";
 import "./App.css";
+import NoteGrid from "./components/NoteGrid.tsx";
+import AuthForms from "./components/form.tsx";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <AuthForms></AuthForms>
+      {/* <NoteGrid></NoteGrid> */}
     </>
   );
 }
