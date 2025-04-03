@@ -1,5 +1,5 @@
 import { SimpleGrid } from "@chakra-ui/react";
-import NoteCard from "./Notecard";
+import NoteCard from "./NoteCard";
 import NoteContainer from "./NoteContainer";
 
 export interface Note {
