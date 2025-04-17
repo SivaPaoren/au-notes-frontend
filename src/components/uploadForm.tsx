@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Card, Button } from "react-bootstrap";
 import {
   Box,
@@ -13,8 +13,10 @@ import axios from "axios";
 const FileUploadForm: React.FC = () => {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [subject, setSubject] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const toast = useToast();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -24,7 +26,8 @@ const FileUploadForm: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!file || !title || !description) {
+
+    if (!file || !title || !description || !subject) {
       toast({
         title: "Error",
         description: "All fields are required.",
@@ -35,19 +38,19 @@ const FileUploadForm: React.FC = () => {
       return;
     }
 
+    const metaData = { title, description, subject };
+
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("title", title);
-    formData.append("description", description);
+    formData.append(
+      "meta",
+      new Blob([JSON.stringify(metaData)], { type: "application/json" })
+    );
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/upload",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      await axios.post("http://localhost:8080/api/notes/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       toast({
         title: "Success",
@@ -56,9 +59,13 @@ const FileUploadForm: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
+
+      // Reset form
       setTitle("");
       setDescription("");
+      setSubject("");
       setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = ""; // Clear file input
     } catch (error) {
       toast({
         title: "Upload Failed",
@@ -80,6 +87,16 @@ const FileUploadForm: React.FC = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter title"
+              isRequired
+            />
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>Subject</FormLabel>
+            <Input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Enter subject"
+              isRequired
             />
           </FormControl>
           <FormControl mb={4}>
@@ -88,11 +105,17 @@ const FileUploadForm: React.FC = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter description"
+              isRequired
             />
           </FormControl>
           <FormControl mb={4}>
             <FormLabel>Upload File</FormLabel>
-            <Input type="file" onChange={handleFileChange} />
+            <Input
+              type="file"
+              onChange={handleFileChange}
+              ref={fileInputRef}
+              isRequired
+            />
           </FormControl>
           <Button type="submit" variant="primary" className="w-100">
             Upload
