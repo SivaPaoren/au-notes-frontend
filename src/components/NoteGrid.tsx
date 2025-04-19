@@ -1,65 +1,33 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { SimpleGrid } from "@chakra-ui/react";
 import NoteCard from "./NoteCard";
 import NoteContainer from "./NoteContainer";
 
 export interface Note {
   id: number;
-  name: string;
-  background_image: string;
+  title: string;
   description: string;
+  subject: string;
 }
 
 const NoteGrid = () => {
-  const notes: Note[] = [
-    {
-      id: 1,
-      name: "Java",
-      background_image: "",
-      description: "Description",
-    },
-    {
-      id: 2,
-      name: "Python",
-      background_image: "",
-      description: "Description",
-    },
-    {
-      id: 1,
-      name: "Java",
-      background_image: "",
-      description: "Description",
-    },
-    {
-      id: 2,
-      name: "Python",
-      background_image: "",
-      description: "Description",
-    },
-    {
-      id: 1,
-      name: "Java",
-      background_image: "",
-      description: "Description",
-    },
-    {
-      id: 2,
-      name: "Python",
-      background_image: "",
-      description: "Description",
-    },
-    {
-      id: 1,
-      name: "Java",
-      background_image: "",
-      description: "Description",
-    },
-    {
-      id: 2,
-      name: "Python",
-      background_image: "",
-      description: "Description",
-    },
-  ];
+  const [notes, setNotes] = useState<Note[]>([]);
+
+  useEffect(() => {
+    // Replace this with your real API endpoint
+    axios
+      .get<Note[]>("http://localhost:8080/api/notes")
+      .then((response) => {
+        setNotes(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching notes:", error);
+      });
+  }, []);
+
+  console.log(notes);
+
   return (
     <SimpleGrid
       minChildWidth="280px"

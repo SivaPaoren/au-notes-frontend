@@ -15,14 +15,12 @@ const NoteCard = ({ note }: Props) => {
       borderRadius="lg"
       overflow="hidden"
     >
-      <Image
-        src={note.background_image || noImage}
-        width="100%"
-        objectFit="cover"
-      />
+      /* background image shall be here*/
+      <Image src={noImage || noImage} width="100%" objectFit="cover" />
       <CardBody>
-        <Heading fontSize="2xl">{note.name}</Heading>
+        <Heading fontSize="2xl">{note.title}</Heading>
         <Text>{note.description}</Text>
+        <Text>{note.subject}</Text>
       </CardBody>
     </Card>
   );
